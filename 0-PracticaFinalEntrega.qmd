@@ -5,6 +5,7 @@ editor: visual
 
 ```{r}
 library(ggplot2)
+library(dplyr)
 ```
 
 Cargar los datos en un dataframe llamado: airbnb
@@ -40,57 +41,132 @@ Renombrar las columnas de la siguiente forma:
 | Review.Scores.Rating   | Puntuacion     |
 
 ```{r}
-newnames<-c("CodigoPostal","Barrio","TipoPropiedad","TipoAlquiler","MaxOcupantes","NumBanyos",
-"NumDormitorios","NumCamas","TipoCama","Comodidades","PiesCuadrados","Precio","Puntuacion")
+
+newnames<-c("CodigoPostal","Barrio","TipoPropiedad","TipoAlquiler","MaxOcupantes","NumBanyos", "NumDormitorios","NumCamas","TipoCama","Comodidades","PiesCuadrados","Precio","Puntuacion")
+
+colnames(airbnb)<-newnames
+
+#View(airbnb)
 ```
+
+
 
 1.  Crea una nueva columna llamada MetrosCuadrados a partir de la columna PiesCuadrados.
 
 Ayuda: 1 pie cuadrado son 0,092903 metros cuadrdados
 
+```{r}
+airbnb$MetrosCuadrados<-airbnb$PiesCuadrados*0.092903
+
+```
+
 ------------------------------------------------------------------------
 
 2.  Miremos el código postal. Es una variable con entradas erroneas. Hay valores como '','-' y '28' que deberían ser considerados como NA. Así mismo también debería ser NA todos los que no compiencen por 28, ya que estamos con códigos postales de Madrid
 
+```{r}
+
+airbnb$CodigoPostal[which(airbnb$CodigoPostal == '-')] <- NA
+airbnb$CodigoPostal[which(airbnb$CodigoPostal == '')] <- NA
+airbnb$CodigoPostal[which(airbnb$CodigoPostal == '28')]  <- NA
+
+#str(airbnb$CodigoPostal)
+#summary(airbnb)
+
+
+
+```
+
+
 El código postal 28002, 28004 y 28051 tienen entradas repetidas. Por ejemplo las entradas 28002\n20882 deberían ir dnetro de 28002
+
+```{r}
+
+
+airbnb$CodigoPostal[which(airbnb$CodigoPostal == '28002\n28002')] = '28002'
+
+
+```
 
 El codigo 2804 debería ser 28004, 2805 deberia ser 28005 y 2815 juncto con 2815 debería ser 28015
 
 Limpia los datos de la columna Codigo Postal
 
+```{r}
+
+airbnb$CodigoPostal[which(airbnb$CodigoPostal == '2804')] = '28004'
+airbnb$CodigoPostal[which(airbnb$CodigoPostal == '2805')] = '28005'
+airbnb$CodigoPostal[which(airbnb$CodigoPostal == '2815')] = '28015'
+
+#str(airbnb$CodigoPostal)
+#summary(airbnb)
+
+
+```
+
+
 ------------------------------------------------------------------------
 
 3.  Una vez limpios los datos ¿Cuales son los códigos postales que tenemos?
+
+table(airbnb$CodigoPostal)
+
 
 ------------------------------------------------------------------------
 
 4.  ¿Cuales son los 5 códigos postales con más entradas? ¿Y con menos? ¿Cuantas entradas tienen?
 
+  airbnb |>
+
 ------------------------------------------------------------------------
 
 5.  ¿Cuales son los barrios que hay en el código postal 28012?
+
+barrios_28012 <- unique(airbnb$Barrio[which(airbnb$CodigoPostal == 28012)])
+
+print(barrios_28012)
+
 
 ------------------------------------------------------------------------
 
 6.  ¿Cuantas entradas hay en cada uno de esos barrios para el codigo postal 28012?
 
+df_entradas_barrio <-airbnb$Barrio[which(airbnb$CodigoPostal == 28012)]
+
+summary(df_entradas_barrio)
+
+
 ------------------------------------------------------------------------
 
 7.  ¿Cuantos barrios hay en todo el dataset airbnb? ¿Cuales son?
+
+length(summary(df_entradas_barrio))
+
+#100
 
 ------------------------------------------------------------------------
 
 8.  ¿Cuales son los 5 barrios que tienen mayor número entradas?
 
+
 ------------------------------------------------------------------------
 
 9.  ¿Cuantos Tipos de Alquiler diferentes hay? ¿Cuales son? ¿Cuantas entradas en el dataframe hay por cada tipo?
 
+import dplyr
+
+tipos_alquileres <- airbnb |> group_by('TipoAlquiter')
+
+
 Muestra el diagrama de cajas del precio para cada uno de los diferentes Tipos de Alquiler
+
+
 
 ------------------------------------------------------------------------
 
 10. Cual es el precio medio de alquiler de cada uno, la diferencia que hay ¿es estadísticamente significativa? ¿Con que test lo comprobarías?
+
+
 
 ------------------------------------------------------------------------
 

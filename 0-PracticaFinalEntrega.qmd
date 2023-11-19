@@ -116,7 +116,11 @@ table(airbnb$CodigoPostal)
 
 4.  ¿Cuales son los 5 códigos postales con más entradas? ¿Y con menos? ¿Cuantas entradas tienen?
 
-  airbnb |>
+entradas <-  airbnb |> group_by(CodigoPostal) |> count(sort = TRUE)
+
+print(head(entradas, 5))
+
+print(tail(entradas, 5))
 
 ------------------------------------------------------------------------
 
